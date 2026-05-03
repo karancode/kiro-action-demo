@@ -42,12 +42,6 @@ jobs:
         with:
           kiro_api_key: ${{ secrets.KIRO_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          trigger_phrase: '@kiro'
-          assignee_trigger: 'kiro'
+          trigger_phrase: '/kiro'
+          assignee_trigger: 'kirocli'
           branch_prefix: 'kiro/'
-          prompt: |
-            Review the codebase for consistency issues.
-            The GET /users endpoint returns a bare array while all other list endpoints
-            return { items, total, page, limit }. Normalize GET /users to return
-            { users, total, page, limit } matching the shape used by GET /tasks.
-            Update the test in tests/users.test.js to match the new response shape.
