@@ -79,6 +79,21 @@ describe('PUT /tasks/:id', () => {
   });
 });
 
-// NOTE: DELETE /tasks/:id tests are missing because the endpoint does not exist yet (Issue #1)
+// NOTE: DELETE /tasks/:id tests
+describe('DELETE /tasks/:id', () => {
+  it('deletes a task and returns it', async () => {
+    const res = await request(app).delete('/tasks/1');
+    expect(res.status).toBe(200);
+    expect(res.body.id).toBe(1);
+    expect(store.tasks.find((t) => t.id === 1)).toBeUndefined();
+  });
+
+  it('returns 404 for unknown id', async () => {
+    const res = await request(app).delete('/tasks/9999');
+    expect(res.status).toBe(404);
+    expect(res.body).toHaveProperty('error');
+  });
+});
+
 // NOTE: PATCH /tasks/:id tests are missing because the endpoint does not exist yet (Issue #2)
 // NOTE: Pagination correctness tests are missing (Issue #6 — the paginate util has a bug)
