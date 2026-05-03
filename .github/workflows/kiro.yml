@@ -1,6 +1,9 @@
 name: Kiro AI Assistant
 
 on:
+  # Manual trigger for testing
+  workflow_dispatch:
+
   # Mode 1: COMMENT — post "@kiro <instruction>" on any issue or PR
   issue_comment:
     types: [created]
