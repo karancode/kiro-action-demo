@@ -1,0 +1,50 @@
+name: Kiro AI Assistant
+
+on:
+  # Mode 1: COMMENT — post "@kiro <instruction>" on any issue or PR
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+
+  # Mode 2: ASSIGN — assign an issue or PR to the "kiro" GitHub user
+  issues:
+    types: [assigned]
+  pull_request:
+    types: [assigned]
+
+  # Mode 3: AUTO — runs every Monday at 9 AM UTC with an explicit prompt
+  schedule:
+    - cron: '0 9 * * 1'
+
+  # Mode 3: AUTO — also runs on push to main (scoped to src/ to avoid loops on kiro/ branches)
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+
+jobs:
+  kiro:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Kiro
+        uses: karancode/kiro-action@main
+        with:
+          kiro_api_key: ${{ secrets.KIRO_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          trigger_phrase: '@kiro'
+          assignee_trigger: 'kiro'
+          branch_prefix: 'kiro/'
+          prompt: |
+            Review the codebase for consistency issues.
+            The GET /users endpoint returns a bare array while all other list endpoints
+            return { items, total, page, limit }. Normalize GET /users to return
+            { users, total, page, limit } matching the shape used by GET /tasks.
+            Update the test in tests/users.test.js to match the new response shape.
