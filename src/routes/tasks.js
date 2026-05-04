@@ -53,7 +53,12 @@ router.put('/:id', (req, res) => {
   res.json(task);
 });
 
-// MISSING: DELETE /tasks/:id — not implemented (see Issue #1)
+router.delete('/:id', (req, res) => {
+  const index = store.tasks.findIndex((t) => t.id === Number(req.params.id));
+  if (index === -1) return res.status(404).json({ error: 'Task not found' });
+  const [deleted] = store.tasks.splice(index, 1);
+  res.json(deleted);
+});
 // MISSING: PATCH /tasks/:id — not implemented (see Issue #2)
 
 module.exports = router;
