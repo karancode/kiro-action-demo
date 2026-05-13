@@ -38,7 +38,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Run Kiro
-        uses: karancode/kiro-action@main
+        uses: karancode/kiro-action@v0
         with:
           kiro_api_key: ${{ secrets.KIRO_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
