@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require('express');
+const path = require('path');
 const { auth } = require('./middleware/auth');
 const tasksRouter = require('./routes/tasks');
 const usersRouter = require('./routes/users');
@@ -9,6 +10,7 @@ const tagsRouter = require('./routes/tags');
 const app = express();
 
 app.use(express.json());
+app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use(auth);
 
 app.use('/tasks', tasksRouter);

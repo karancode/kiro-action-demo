@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Taskly API Demo</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header>
+    <h1>Taskly API Demo</h1>
+    <p class="subtitle">Live UI for the <a href="https://github.com/karancode/kiro-action" target="_blank">kiro-action</a> demo repo. Every change you see here was implemented by Kiro from a GitHub issue.</p>
+  </header>
+
+  <main>
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Tasks</h2>
+        <button id="refresh-tasks" class="btn-secondary">Refresh</button>
+      </div>
+
+      <div class="pagination">
+        <button id="prev-page">← Prev</button>
+        <span>Page <input type="number" id="page-input" value="1" min="1" /> · Limit <input type="number" id="limit-input" value="10" min="1" /></span>
+        <button id="next-page">Next →</button>
+      </div>
+
+      <table id="tasks-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Priority</th>
+            <th>Assignee</th>
+            <th>Tags</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <details class="form-details">
+        <summary>+ Create Task</summary>
+        <form id="create-task-form">
+          <input name="title" placeholder="Title" required />
+          <input name="description" placeholder="Description" />
+          <select name="status">
+            <option value="todo">todo</option>
+            <option value="in_progress">in_progress</option>
+            <option value="done">done</option>
+          </select>
+          <select name="priority">
+            <option value="low">low</option>
+            <option value="medium" selected>medium</option>
+            <option value="high">high</option>
+          </select>
+          <input name="assigneeId" type="number" placeholder="Assignee ID" />
+          <input name="dueDate" type="date" />
+          <button type="submit">Create</button>
+        </form>
+      </details>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Users</h2>
+        <button id="refresh-users" class="btn-secondary">Refresh</button>
+      </div>
+      <ul id="users-list"></ul>
+      <details class="form-details">
+        <summary>+ Create User</summary>
+        <form id="create-user-form">
+          <input name="name" placeholder="Name" required />
+          <input name="email" type="email" placeholder="email@example.com" required />
+          <button type="submit">Create</button>
+        </form>
+      </details>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Tags</h2>
+        <button id="refresh-tags" class="btn-secondary">Refresh</button>
+      </div>
+      <ul id="tags-list"></ul>
+      <details class="form-details">
+        <summary>+ Create Tag</summary>
+        <form id="create-tag-form">
+          <input name="name" placeholder="Tag name" required />
+          <button type="submit">Create</button>
+        </form>
+      </details>
+    </section>
+
+    <section class="panel response-viewer">
+      <div class="panel-header">
+        <h2>Last Response</h2>
+        <span id="last-status" class="status-badge"></span>
+      </div>
+      <pre id="last-response">No requests made yet.</pre>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>
