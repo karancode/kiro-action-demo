@@ -12,9 +12,10 @@ function validateCreateTask(req, res, next) {
     return res.status(400).json({ error: `status must be one of: ${validStatuses.join(', ')}` });
   }
 
-  // BUG: priority is not validated — any string is accepted
-  // It should only allow: low, medium, high
-  void priority;
+  const validPriorities = ['low', 'medium', 'high'];
+  if (priority !== undefined && !validPriorities.includes(priority)) {
+    return res.status(400).json({ error: `priority must be one of: ${validPriorities.join(', ')}` });
+  }
 
   next();
 }
