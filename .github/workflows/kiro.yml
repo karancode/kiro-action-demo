@@ -10,11 +10,12 @@ on:
   pull_request_review_comment:
     types: [created]
 
-  # Mode 2: ASSIGN — assign an issue or PR to the "kiro" GitHub user
+  # Mode 2: LABEL — add the "kiro" label to an issue or PR
+  # Mode 2b: ASSIGN — assign an issue or PR to the "kirocli" GitHub user (legacy)
   issues:
-    types: [assigned]
+    types: [assigned, labeled]
   pull_request:
-    types: [assigned]
+    types: [assigned, labeled]
 
   # Mode 3: AUTO — runs every Monday at 9 AM UTC with an explicit prompt
   schedule:
@@ -38,10 +39,11 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Run Kiro
-        uses: karancode/kiro-action@v0
+        uses: karancode/kiro-action@feat/label-mode
         with:
           kiro_api_key: ${{ secrets.KIRO_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           trigger_phrase: '/kiro'
+          label_trigger: 'kiro'
           assignee_trigger: 'kirocli'
           branch_prefix: 'kiro/'
