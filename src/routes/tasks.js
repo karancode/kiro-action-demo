@@ -35,8 +35,7 @@ router.post('/', validateCreateTask, (req, res) => {
   res.status(201).json(task);
 });
 
-// BUG: no validateCreateTask middleware here — PUT accepts any body without validation
-router.put('/:id', (req, res) => {
+router.put('/:id', validateCreateTask, (req, res) => {
   const task = store.findById(store.tasks, req.params.id);
   if (!task) return res.status(404).json({ error: 'Task not found' });
 
