@@ -2,6 +2,7 @@
 
 const { Router } = require('express');
 const store = require('../store');
+const { paginate } = require('../utils/pagination');
 const { validateCreateUser } = require('../middleware/validate');
 
 const router = Router();
@@ -29,6 +30,14 @@ router.post('/', validateCreateUser, (req, res) => {
   res.status(201).json(user);
 });
 
-// MISSING: GET /users/:id/tasks — not implemented (see Issue #3)
+router.get('/:id/tasks', (req, res) => {
+  const user = store.findById(store.users, req.params.id);
+  if (!user) return res.status(404).json({ error: 'User not found' });
+
+  const userTasks = store.tasks.filter((t) => t.assigneeId === user.id);
+  const { page, limit } = req.query;
+  const result = paginate(userTasks, page, limit);
+  res.json({ tasks: result.items, total: result.total, page: result.page, limit: result.limit });
+});
 
 module.exports = router;
