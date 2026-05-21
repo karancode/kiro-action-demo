@@ -94,5 +94,35 @@ describe('DELETE /tasks/:id', () => {
 });
 
 // NOTE: DELETE /tasks/:id tests added (Issue #1)
-// NOTE: PATCH /tasks/:id tests are missing because the endpoint does not exist yet (Issue #2)
+// NOTE: PATCH /tasks/:id tests below (Issue #2)
+
+describe('PATCH /tasks/:id', () => {
+  it('partially updates a task', async () => {
+    const res = await request(app).patch('/tasks/1').send({ status: 'done' });
+    expect(res.status).toBe(200);
+    expect(res.body.status).toBe('done');
+    expect(res.body.title).toBe('Task One');
+  });
+
+  it('returns 404 for unknown id', async () => {
+    const res = await request(app).patch('/tasks/9999').send({ status: 'done' });
+    expect(res.status).toBe(404);
+  });
+
+  it('returns 400 for invalid status', async () => {
+    const res = await request(app).patch('/tasks/1').send({ status: 'invalid' });
+    expect(res.status).toBe(400);
+  });
+
+  it('returns 400 for invalid priority', async () => {
+    const res = await request(app).patch('/tasks/1').send({ priority: 'critical' });
+    expect(res.status).toBe(400);
+  });
+
+  it('returns 400 for empty title', async () => {
+    const res = await request(app).patch('/tasks/1').send({ title: '  ' });
+    expect(res.status).toBe(400);
+  });
+});
+
 // NOTE: Pagination correctness tests are missing (Issue #6 — the paginate util has a bug)

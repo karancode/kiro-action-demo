@@ -3,7 +3,7 @@
 const { Router } = require('express');
 const store = require('../store');
 const { paginate } = require('../utils/pagination');
-const { validateCreateTask } = require('../middleware/validate');
+const { validateCreateTask, validatePatchTask } = require('../middleware/validate');
 
 const router = Router();
 
@@ -61,5 +61,17 @@ router.delete('/:id', (req, res) => {
 });
 
 // MISSING: PATCH /tasks/:id — not implemented (see Issue #2)
+router.patch('/:id', validatePatchTask, (req, res) => {
+  const task = store.findById(store.tasks, req.params.id);
+  if (!task) return res.status(404).json({ error: 'Task not found' });
+
+  const fields = ['title', 'description', 'status', 'priority', 'assigneeId', 'dueDate', 'tags'];
+  fields.forEach((field) => {
+    if (req.body[field] !== undefined) {
+      task[field] = field === 'title' ? req.body[field].trim() : req.body[field];
+    }
+  });
+  res.json(task);
+});
 
 module.exports = router;
