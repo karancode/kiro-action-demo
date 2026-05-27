@@ -2,106 +2,156 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Taskly API Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Taskly — A small REST API, in motion.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
-  <header>
-    <h1>Taskly API Demo</h1>
-    <p class="subtitle">Live UI for the <a href="https://github.com/karancode/kiro-action" target="_blank">kiro-action</a> demo repo. Every change you see here was implemented by Kiro from a GitHub issue.</p>
-  </header>
 
-  <main>
-    <section class="panel">
-      <div class="panel-header">
-        <h2>Tasks</h2>
-        <button id="refresh-tasks" class="btn-secondary">Refresh</button>
-      </div>
+<div class="grain" aria-hidden="true"></div>
 
-      <div class="pagination">
-        <button id="prev-page">← Prev</button>
-        <span>Page <input type="number" id="page-input" value="1" min="1" /> · Limit <input type="number" id="limit-input" value="10" min="1" /></span>
-        <button id="next-page">Next →</button>
-      </div>
+<header class="masthead">
+  <div class="mast-left">
+    <span class="pulse" id="conn-pulse" aria-hidden="true"></span>
+    <span class="mast-status" id="conn-status">connecting</span>
+  </div>
+  <div class="mast-center">
+    <span class="wordmark">Taskly<sup aria-hidden="true">§</sup></span>
+  </div>
+  <div class="mast-right">
+    <span class="mast-meta">endpoints <em id="ep-count">19</em></span>
+    <span class="mast-divider">·</span>
+    <span class="mast-meta"><span id="utc-clock">--:--:--</span> utc</span>
+  </div>
+</header>
 
-      <table id="tasks-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Title</th>
-            <th>Status</th>
-            <th>Priority</th>
-            <th>Assignee</th>
-            <th>Tags</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+<main class="canvas">
+  <section class="hero">
+    <p class="eyebrow">An interactive REST API explorer · Demonstration build</p>
+    <h1 class="hero-title">Tasks,<br/><em>in motion.</em></h1>
+    <p class="hero-sub">A live workspace for the Taskly API. Every list, every form, every chip below is wired to the same JSON service. Watch the right column to see your requests stream in.</p>
+  </section>
 
-      <details class="form-details">
-        <summary>+ Create Task</summary>
-        <form id="create-task-form">
-          <input name="title" placeholder="Title" required />
-          <input name="description" placeholder="Description" />
-          <select name="status">
+  <div class="layout">
+    <div class="content">
+
+      <section class="section" id="sect-tasks" aria-labelledby="sect-tasks-h">
+        <header class="sect-head">
+          <span class="sect-num">01</span>
+          <h2 class="sect-title" id="sect-tasks-h">Tasks</h2>
+          <div class="sect-actions">
+            <select id="filter-status" class="ghost-select" aria-label="Filter by status">
+              <option value="">all statuses</option>
+              <option value="todo">todo</option>
+              <option value="in_progress">in_progress</option>
+              <option value="done">done</option>
+            </select>
+            <button class="ghost-btn" id="open-create-task" type="button">+ new</button>
+          </div>
+        </header>
+
+        <form class="row-form hidden" id="create-task-form" autocomplete="off">
+          <input name="title" placeholder="title — what needs doing" required aria-label="title" />
+          <select name="status" aria-label="status">
             <option value="todo">todo</option>
             <option value="in_progress">in_progress</option>
             <option value="done">done</option>
           </select>
-          <select name="priority">
+          <select name="priority" aria-label="priority">
             <option value="low">low</option>
             <option value="medium" selected>medium</option>
             <option value="high">high</option>
           </select>
-          <input name="assigneeId" type="number" placeholder="Assignee ID" />
-          <input name="dueDate" type="date" />
-          <button type="submit">Create</button>
+          <input name="assigneeId" type="number" placeholder="@user id" aria-label="assignee id" />
+          <input name="dueDate" type="date" aria-label="due date" />
+          <button class="solid-btn" type="submit">file it</button>
+          <button class="ghost-btn" type="button" id="cancel-create-task">cancel</button>
         </form>
-      </details>
-    </section>
 
-    <section class="panel">
-      <div class="panel-header">
-        <h2>Users</h2>
-        <button id="refresh-users" class="btn-secondary">Refresh</button>
-      </div>
-      <ul id="users-list"></ul>
-      <details class="form-details">
-        <summary>+ Create User</summary>
-        <form id="create-user-form">
-          <input name="name" placeholder="Name" required />
-          <input name="email" type="email" placeholder="email@example.com" required />
-          <button type="submit">Create</button>
+        <ul class="task-list" id="task-list" role="list"></ul>
+
+        <footer class="sect-foot">
+          <span class="pg-label">page</span>
+          <input type="number" id="page-input" value="1" min="1" aria-label="current page" />
+          <span class="pg-divider">/</span>
+          <span id="page-total">—</span>
+          <span class="pg-spacer"></span>
+          <button class="ghost-btn" id="prev-page" type="button">‹ prev</button>
+          <button class="ghost-btn" id="next-page" type="button">next ›</button>
+          <span class="pg-spacer"></span>
+          <span class="pg-label">limit</span>
+          <input type="number" id="limit-input" value="10" min="1" aria-label="items per page" />
+        </footer>
+      </section>
+
+      <section class="section" id="sect-users" aria-labelledby="sect-users-h">
+        <header class="sect-head">
+          <span class="sect-num">02</span>
+          <h2 class="sect-title" id="sect-users-h">Users</h2>
+          <div class="sect-actions">
+            <button class="ghost-btn" id="open-create-user" type="button">+ new</button>
+          </div>
+        </header>
+
+        <form class="row-form hidden" id="create-user-form" autocomplete="off">
+          <input name="name" placeholder="name" required aria-label="name" />
+          <input name="email" type="email" placeholder="email@somewhere" required aria-label="email" />
+          <button class="solid-btn" type="submit">enroll</button>
+          <button class="ghost-btn" type="button" id="cancel-create-user">cancel</button>
         </form>
-      </details>
-    </section>
 
-    <section class="panel">
-      <div class="panel-header">
-        <h2>Tags</h2>
-        <button id="refresh-tags" class="btn-secondary">Refresh</button>
-      </div>
-      <ul id="tags-list"></ul>
-      <details class="form-details">
-        <summary>+ Create Tag</summary>
-        <form id="create-tag-form">
-          <input name="name" placeholder="Tag name" required />
-          <button type="submit">Create</button>
+        <ul class="user-list" id="user-list" role="list"></ul>
+      </section>
+
+      <section class="section" id="sect-tags" aria-labelledby="sect-tags-h">
+        <header class="sect-head">
+          <span class="sect-num">03</span>
+          <h2 class="sect-title" id="sect-tags-h">Tags</h2>
+          <div class="sect-actions">
+            <button class="ghost-btn" id="open-create-tag" type="button">+ new</button>
+          </div>
+        </header>
+
+        <form class="row-form hidden" id="create-tag-form" autocomplete="off">
+          <input name="name" placeholder="tag name — e.g. blocker" required aria-label="tag name" />
+          <button class="solid-btn" type="submit">add</button>
+          <button class="ghost-btn" type="button" id="cancel-create-tag">cancel</button>
         </form>
-      </details>
-    </section>
 
-    <section class="panel response-viewer">
-      <div class="panel-header">
-        <h2>Last Response</h2>
-        <span id="last-status" class="status-badge"></span>
-      </div>
-      <pre id="last-response">No requests made yet.</pre>
-    </section>
-  </main>
+        <ul class="tag-list" id="tag-list" role="list"></ul>
+      </section>
 
-  <script src="/app.js"></script>
+    </div>
+
+    <aside class="rail" aria-label="Live request feed">
+      <header class="rail-head">
+        <span class="rail-eye">Live · request feed</span>
+        <button class="ghost-btn small" id="toggle-feed" type="button" title="Pause/resume the feed"><span id="feed-state">▮▮ pause</span></button>
+      </header>
+      <ol class="feed" id="feed" role="list"></ol>
+      <section class="response" aria-label="Latest response">
+        <header class="response-head">
+          <span class="rail-eye">Latest response</span>
+          <span class="response-meta" id="response-meta">—</span>
+        </header>
+        <pre class="response-body" id="response-body"><span class="json-null">// requests will appear here</span></pre>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<footer class="statusbar" role="contentinfo">
+  <span class="sb-item"><span class="sb-key">api</span> taskly.local</span>
+  <span class="sb-item"><span class="sb-key">auth</span> stub · always pass</span>
+  <span class="sb-item"><span class="sb-key">build</span> dev</span>
+  <span class="sb-item"><span class="sb-key">last error</span> <span id="sb-last-error">none</span></span>
+  <span class="sb-spacer"></span>
+  <span class="sb-item">made with <a href="https://github.com/karancode/kiro-action" target="_blank" rel="noopener">kiro-action</a></span>
+</footer>
+
+<script src="/app.js"></script>
 </body>
 </html>
