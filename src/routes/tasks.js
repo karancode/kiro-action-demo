@@ -59,6 +59,27 @@ router.delete('/:id', (req, res) => {
   res.status(204).end();
 });
 
+router.post('/:id/tags', (req, res) => {
+  const task = store.findById(store.tasks, req.params.id);
+  if (!task) return res.status(404).json({ error: 'Task not found' });
+  const { tagId } = req.body;
+  if (!tagId) return res.status(400).json({ error: 'tagId is required' });
+  const tag = store.findById(store.tags, tagId);
+  if (!tag) return res.status(404).json({ error: 'Tag not found' });
+  if (!task.tags.includes(tag.id)) task.tags.push(tag.id);
+  res.status(200).json(task);
+});
+
+router.delete('/:id/tags/:tagId', (req, res) => {
+  const task = store.findById(store.tasks, req.params.id);
+  if (!task) return res.status(404).json({ error: 'Task not found' });
+  const tagId = Number(req.params.tagId);
+  const index = task.tags.indexOf(tagId);
+  if (index === -1) return res.status(404).json({ error: 'Tag not found on task' });
+  task.tags.splice(index, 1);
+  res.status(200).json(task);
+});
+
 // MISSING: PATCH /tasks/:id — not implemented (see Issue #2)
 router.patch('/:id', validatePatchTask, (req, res) => {
   const task = store.findById(store.tasks, req.params.id);
