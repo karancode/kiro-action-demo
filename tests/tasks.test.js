@@ -125,4 +125,22 @@ describe('PATCH /tasks/:id', () => {
   });
 });
 
-// NOTE: Pagination correctness tests are missing (Issue #6 — the paginate util has a bug)
+describe('GET /tasks pagination', () => {
+  it('page=1&limit=2 returns the first two tasks', async () => {
+    const res = await request(app).get('/tasks?page=1&limit=2');
+    expect(res.status).toBe(200);
+    expect(res.body.tasks).toHaveLength(2);
+    expect(res.body.tasks[0].id).toBe(1);
+    expect(res.body.tasks[1].id).toBe(2);
+    expect(res.body.page).toBe(1);
+  });
+
+  it('page=2&limit=2 returns tasks 3–4', async () => {
+    const res = await request(app).get('/tasks?page=2&limit=2');
+    expect(res.status).toBe(200);
+    expect(res.body.tasks).toHaveLength(2);
+    expect(res.body.tasks[0].id).toBe(3);
+    expect(res.body.tasks[1].id).toBe(4);
+    expect(res.body.page).toBe(2);
+  });
+});

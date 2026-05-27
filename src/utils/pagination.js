@@ -6,7 +6,7 @@ function paginate(data, page, limit) {
   page = parseInt(page, 10) || 1;
   limit = parseInt(limit, 10) || 10;
 
-  const start = page * limit; // should be (page - 1) * limit
+  const start = (page - 1) * limit;
   const end = start + limit;
 
   return {
