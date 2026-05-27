@@ -19,7 +19,5 @@ router.post('/', (req, res) => {
   res.status(201).json(tag);
 });
 
-// MISSING: POST /tasks/:id/tags — add a tag to a task (see Issue #4)
-// MISSING: DELETE /tasks/:id/tags/:tagId — remove a tag from a task (see Issue #4)
 
 module.exports = router;
