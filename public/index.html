@@ -42,6 +42,12 @@
         <header class="sect-head">
           <span class="sect-num">01</span>
           <h2 class="sect-title" id="sect-tasks-h">Tasks</h2>
+          <div class="stats-panel" id="stats-panel" aria-label="Task status summary">
+            <span class="stat"><span class="stat-num" id="stat-todo">—</span><span class="stat-label">todo</span></span>
+            <span class="stat"><span class="stat-num" id="stat-progress">—</span><span class="stat-label">in progress</span></span>
+            <span class="stat"><span class="stat-num" id="stat-done">—</span><span class="stat-label">done</span></span>
+            <span class="stat stat-total"><span class="stat-num" id="stat-total">—</span><span class="stat-label">total</span></span>
+          </div>
           <div class="sect-actions">
             <select id="filter-status" class="ghost-select" aria-label="Filter by status">
               <option value="">all statuses</option>
