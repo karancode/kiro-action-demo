@@ -13,6 +13,12 @@ router.get('/', (req, res) => {
   res.json({ tasks: result.items, total: result.total, page: result.page, limit: result.limit });
 });
 
+router.get('/stats', (req, res) => {
+  const byStatus = { todo: 0, in_progress: 0, done: 0 };
+  store.tasks.forEach((t) => { if (t.status in byStatus) byStatus[t.status]++; });
+  res.json({ total: store.tasks.length, byStatus });
+});
+
 router.get('/:id', (req, res) => {
   const task = store.findById(store.tasks, req.params.id);
   if (!task) return res.status(404).json({ error: 'Task not found' });
