@@ -125,6 +125,21 @@ describe('PATCH /tasks/:id', () => {
   });
 });
 
+describe('GET /tasks/stats', () => {
+  it('returns status breakdown of existing tasks', async () => {
+    const res = await request(app).get('/tasks/stats');
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ total: 4, byStatus: { todo: 3, in_progress: 0, done: 1 } });
+  });
+
+  it('returns zeroes when store is empty', async () => {
+    store.tasks.length = 0;
+    const res = await request(app).get('/tasks/stats');
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ total: 0, byStatus: { todo: 0, in_progress: 0, done: 0 } });
+  });
+});
+
 describe('GET /tasks pagination', () => {
   it('page=1&limit=2 returns the first two tasks', async () => {
     const res = await request(app).get('/tasks?page=1&limit=2');
