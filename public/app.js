@@ -131,12 +131,11 @@ function escapeHtml(s) {
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
-function statusFilterMatch(task) {
-  return !state.status || task.status === state.status;
-}
-
 async function loadTasks() {
-  const { data } = await api('GET', `/tasks?page=${state.page}&limit=${state.limit}`);
+  // Server-side filtering: pass ?status= through to the API (added in #16).
+  const params = new URLSearchParams({ page: state.page, limit: state.limit });
+  if (state.status) params.set('status', state.status);
+  const { data } = await api('GET', `/tasks?${params}`);
   const ul = $('#task-list');
   ul.innerHTML = '';
   if (!data || !Array.isArray(data.tasks)) {
@@ -144,12 +143,12 @@ async function loadTasks() {
     $('#page-total').textContent = '—';
     return;
   }
-  const visible = data.tasks.filter(statusFilterMatch);
+  const visible = data.tasks;
   const pageTotal = Math.max(1, Math.ceil((data.total || 0) / state.limit));
   $('#page-total').textContent = pageTotal;
 
   if (!visible.length) {
-    ul.innerHTML = `<li class="empty">${state.status ? `No ${state.status} tasks on this page.` : 'No tasks on this page.'}</li>`;
+    ul.innerHTML = `<li class="empty">${state.status ? `No ${state.status} tasks.` : 'No tasks on this page.'}</li>`;
     return;
   }
 
@@ -332,6 +331,8 @@ $('#limit-input').addEventListener('change', (e) => {
 // status filter
 $('#filter-status').addEventListener('change', (e) => {
   state.status = e.target.value;
+  state.page = 1;
+  $('#page-input').value = 1;
   loadTasks();
 });
 
