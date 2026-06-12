@@ -230,6 +230,45 @@ input, select, textarea { font-family: var(--mono); }
   align-items: center;
 }
 
+/* Stats panel */
+.stats-panel {
+  display: flex;
+  gap: 24px;
+  align-items: baseline;
+  padding: 14px 0;
+  border-bottom: var(--hair);
+  margin-bottom: 0;
+}
+.stat {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.stat-num {
+  font-family: var(--mono);
+  font-size: 28px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  line-height: 1;
+}
+.stat-label {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.stat-total {
+  padding-left: 24px;
+  border-left: var(--hair);
+}
+
+@media (max-width: 720px) {
+  .stats-panel { gap: 14px; flex-wrap: wrap; }
+  .stat-num { font-size: 22px; }
+  .stat-total { padding-left: 14px; }
+}
+
 .sect-foot {
   display: flex;
   align-items: center;

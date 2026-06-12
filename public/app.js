@@ -123,6 +123,17 @@ async function api(method, path, body) {
   return { status: res.status, data };
 }
 
+// ---------- stats panel -----------------------------------------------------
+
+async function loadStats() {
+  const { data } = await api('GET', '/tasks/stats');
+  if (!data) return;
+  $('#stat-todo').textContent = data.byStatus?.todo ?? 0;
+  $('#stat-progress').textContent = data.byStatus?.in_progress ?? 0;
+  $('#stat-done').textContent = data.byStatus?.done ?? 0;
+  $('#stat-total').textContent = data.total ?? 0;
+}
+
 // ---------- task rendering --------------------------------------------------
 
 function escapeHtml(s) {
@@ -183,12 +194,14 @@ async function cycleStatus(id) {
   const next = order[(order.indexOf(task.status) + 1) % order.length];
   await api('PATCH', `/tasks/${id}`, { status: next });
   await loadTasks();
+  await loadStats();
   flashRow(id);
 }
 
 async function deleteTask(id) {
   await api('DELETE', `/tasks/${id}`);
   await loadTasks();
+  await loadStats();
 }
 
 function flashRow(id) {
@@ -280,6 +293,7 @@ $('#create-task-form').addEventListener('submit', async (e) => {
     e.target.reset();
     e.target.classList.add('hidden');
     await loadTasks();
+    await loadStats();
   }
 });
 
@@ -372,6 +386,7 @@ tickClock();
   $('#feed').innerHTML = '<li class="feed-empty">awaiting first request…</li>';
   await checkConnection();
   await new Promise((r) => setTimeout(r, 220));
+  await loadStats();
   await loadTasks();
   await new Promise((r) => setTimeout(r, 120));
   await loadUsers();
