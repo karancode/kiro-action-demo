@@ -8,8 +8,9 @@ const { validateCreateTask, validatePatchTask } = require('../middleware/validat
 const router = Router();
 
 router.get('/', (req, res) => {
-  const { page, limit } = req.query;
-  const result = paginate(store.tasks, page, limit);
+  const { page, limit, status } = req.query;
+  const filtered = status ? store.tasks.filter((t) => t.status === status) : store.tasks;
+  const result = paginate(filtered, page, limit);
   res.json({ tasks: result.items, total: result.total, page: result.page, limit: result.limit });
 });
 
