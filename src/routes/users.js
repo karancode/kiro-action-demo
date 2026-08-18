@@ -7,10 +7,10 @@ const { validateCreateUser } = require('../middleware/validate');
 
 const router = Router();
 
-// INCONSISTENCY: returns a bare array instead of { users, total, page, limit }
-// All other list endpoints return a paginated shape — this one does not (see auto mode prompt)
 router.get('/', (req, res) => {
-  res.json(store.users);
+  const { page, limit } = req.query;
+  const result = paginate(store.users, page, limit);
+  res.json({ users: result.items, total: result.total, page: result.page, limit: result.limit });
 });
 
 router.get('/:id', (req, res) => {
