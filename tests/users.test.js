@@ -13,11 +13,23 @@ beforeEach(() => {
 });
 
 describe('GET /users', () => {
-  it('returns 200 with user list', async () => {
+  it('returns 200 with paginated user list', async () => {
     const res = await request(app).get('/users');
     expect(res.status).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
-    expect(res.body.length).toBe(2);
+    expect(Array.isArray(res.body.users)).toBe(true);
+    expect(res.body.users.length).toBe(2);
+    expect(res.body.total).toBe(2);
+    expect(res.body.page).toBe(1);
+    expect(res.body.limit).toBe(10);
+  });
+
+  it('respects page and limit query params', async () => {
+    const res = await request(app).get('/users?page=1&limit=1');
+    expect(res.status).toBe(200);
+    expect(res.body.users.length).toBe(1);
+    expect(res.body.total).toBe(2);
+    expect(res.body.page).toBe(1);
+    expect(res.body.limit).toBe(1);
   });
 });
 
