@@ -1,10 +1,13 @@
 'use strict';
 
-// WIP: stub only — not wired up yet.
-// Should send JSON { error: "<message>" } with an appropriate status code,
-// matching the error shape the route handlers already use.
+// Global error handler: responds with JSON { error: "<message>" } using
+// err.status when present, otherwise 500. Matches the error shape the route
+// handlers already use.
+// eslint-disable-next-line no-unused-vars
 function errorHandler(err, req, res, next) {
-  throw new Error('not implemented');
+  const status = err.status || 500;
+  const message = err.message || 'Internal Server Error';
+  res.status(status).json({ error: message });
 }
 
 module.exports = { errorHandler };

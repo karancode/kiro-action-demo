@@ -3,6 +3,7 @@
 const express = require('express');
 const path = require('path');
 const { auth } = require('./middleware/auth');
+const { errorHandler } = require('./middleware/error-handler');
 const tasksRouter = require('./routes/tasks');
 const usersRouter = require('./routes/users');
 const tagsRouter = require('./routes/tags');
@@ -19,7 +20,8 @@ app.use('/tags', tagsRouter);
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
-// MISSING: global error handler — unhandled errors bubble up as 500 with an HTML response
+// Global error handler — must be the last middleware, after the routers
+app.use(errorHandler);
 
 if (require.main === module) {
   const PORT = process.env.PORT || 3000;
